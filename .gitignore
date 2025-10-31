@@ -1,0 +1,51 @@
+# === Python & FastAPI 기본 ===
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.env
+venv/
+.envrc
+*.txt
+
+# === PyTorch / ML 관련 ===
+# 학습된 모델 파일
+*.pt
+*.pth
+*.onnx
+
+# 체크포인트, 로그
+checkpoints/
+runs/
+logs/
+*.log
+
+# 데이터셋
+data/
+dataset/
+datasets/
+*.csv
+*.zip
+*.tar
+*.gz
+
+# Jupyter Notebook 자동파일
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE / OS 관련
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# === AWS 관련 ===
+# 환경 변수 파일이나 보안 키
+*.pem
+*.key
+*.json
+
+# === FastAPI / Uvicorn ===
+*.db
+*.sqlite3
+uploads/
