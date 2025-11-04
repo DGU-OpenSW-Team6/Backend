@@ -51,7 +51,7 @@ def predict(a: float, b: float, c: float):
     return {"input": [a, b, c], "prediction": y}
 
 #이미지 업로드 기능
-@app.post("/upload/")
+@app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
     file_ext = file.filename.split(".")[-1]
     s3_key = f"images/{uuid4()}.{file_ext}"
@@ -59,3 +59,9 @@ async def upload_image(file: UploadFile = File(...)):
     s3.upload_fileobj(file.file, BUCKET, s3_key, ExtraArgs={"ContentType": file.content_type})
     file_url = f"https://{BUCKET}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{s3_key}"
     return {"url": file_url}
+
+#점수 반환하기
+@app.get("/returnScore")
+def return_score():
+    """프론트 요청 시 AI 접근성 점수와 피드백 반환"""
+    return {"점수:":[1,2,3,4], "평가":['a','b','c','d']}
