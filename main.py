@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 import boto3
 import os
 from dotenv import load_dotenv
@@ -11,6 +12,8 @@ from uuid import uuid4
 load_dotenv()
 app = FastAPI()
 
+
+#AWS S3 연결
 s3 = boto3.client(
     "s3",
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -20,8 +23,18 @@ s3 = boto3.client(
 
 BUCKET = os.getenv("S3_BUCKET_NAME")
 
+#프론트(netlify) 연결
+origins = [
+    "https://myapp.netlify.app",  # Netlify 배포 주소
+]
 
-app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,      # Netlify 도메인 허용
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class SimpleModel(nn.Module):
@@ -60,8 +73,7 @@ async def upload_image(file: UploadFile = File(...)):
     file_url = f"https://{BUCKET}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{s3_key}"
     return {"url": file_url}
 
-#점수 반환하기
+#점수 반환하기(json)
 @app.get("/returnScore")
 def return_score():
-    """프론트 요청 시 AI 접근성 점수와 피드백 반환"""
     return {"점수:":[1,2,3,4], "평가":['a','b','c','d']}
