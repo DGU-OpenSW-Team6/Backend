@@ -24,7 +24,7 @@ BUCKET = os.getenv("S3_BUCKET_NAME")
 
 # 프론트(Netlify) 연결
 origins = [
-    "https://myapp.netlify.app",  # Netlify 배포 주소
+    "mysketchcheck.netlify.app",  # Netlify 배포 주소
 ]
 app.add_middleware(
     CORSMiddleware,
