@@ -7,6 +7,9 @@ import os
 from dotenv import load_dotenv
 from uuid import uuid4
 
+from fastapi.responses import StreamingResponse
+import io
+
 load_dotenv()
 app = FastAPI()
 
@@ -47,7 +50,7 @@ model.eval()
 # ===== 기본 엔드포인트 =====
 @app.get("/")
 def read_root():
-    return {"message": "Hello, FastAPI!"}
+    return {"message": "DGU OpenSW Team6"}
 
 
 # ===== 인공지능 모듈 테스트용 =====
@@ -69,6 +72,32 @@ async def upload_image(file: UploadFile = File(...)):
     s3.upload_fileobj(file.file, BUCKET, s3_key, ExtraArgs={"ContentType": file.content_type})
     file_url = f"https://{BUCKET}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{s3_key}"
     return {"url": file_url}
+
+
+
+# ===== S3 이미지 다운로드 엔드포인트 =====
+@app.get("/download")
+def download_image(filename: str):
+    """
+    S3에 저장된 이미지를 filename으로 가져오는 엔드포인트.
+    예: /download?filename=images/abcd1234.png
+    """
+    try:
+        file_stream = io.BytesIO()
+        s3.download_fileobj(BUCKET, filename, file_stream)
+        file_stream.seek(0)  # 스트림을 처음으로 되돌림
+
+        # MIME 타입 추정 (간단히 처리)
+        content_type = "image/jpeg"
+        if filename.lower().endswith(".png"):
+            content_type = "image/png"
+        elif filename.lower().endswith(".gif"):
+            content_type = "image/gif"
+
+        return StreamingResponse(file_stream, media_type=content_type)
+    except Exception as e:
+        return {"error": f"파일 다운로드 실패: {str(e)}"}
+
 
 
 # ===== 점수 반환 (테스트용) =====
